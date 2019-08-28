@@ -1,0 +1,29 @@
+﻿@model  VehicleModel
+
+<div class="card card-header-pills m-1 p-1">
+    <div class="bg-transparent p-1">
+        <h3>
+            @Model.Name
+            <span class="badge badge-pill badge-primary" style="float:right">
+                <small> @Model.Make.Name</small>
+            </span>
+        </h3>
+    </div>
+    <div>
+        <h4>
+            @Model.Abrv
+            <span class="badge badge-pill badge-light" style="float:right">
+                <a class="btn btn-outline-secondary" 
+                   asp-action="Edit" 
+                   asp-controller="Model" 
+                   asp-route-modelId="@Model.Id">Izmjeni</a>
+
+                <a class="btn btn-outline-secondary" 
+                   onclick="return confirm('Jeste li sigurni da želite izbrisati proizvođača: @Model.Name')"
+                   asp-action="Delete" 
+                   asp-controller="Model" 
+                   asp-route-modelId="@Model.Id">Izbriši</a>
+            </span>
+        </h4>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@model ModelAdministrationViewModel;
+
+
+
+    <div class="form-group row">
+        <div class="col">
+            <form class="form-inline" asp-action="Administration">
+                <div class="form-group mb-2">
+                    <input class="btn border border-dark text-left m-2" type="text" name="searchString" value="@Model.SearchString" />
+                    <select class="custom-select border-dark m-2"
+                            asp-for="SearchFilter"
+                            asp-items="@Html.GetEnumSelectList<VehicleData>().Where(x => x.Text != VehicleData.Unknown.ToString() && x.Text != VehicleData.Id.ToString())">
+                        <option selected="selected" value="">Odabirite filter</option>
+                    </select>
+                        <input type="submit" class="btn btn-outline-dark" value="Traži" 
+                               asp-route-sort="@Model.SortingInfo.SortBy"
+                               asp-route-sortByDescending=@Model.SortingInfo.SortByDescending />
+                </div>
+            </form>
+            </div>
+
+        <div class="col" >
+            <form class="form-inline" asp-action="Administration">
+                <div class="form-group mb-2">
+                    <label>Sortiraj po:</label>
+                    <select class="custom-select border-dark m-2"
+                            name="sort" asp-for="SortingInfo.SortBy"
+                            asp-items="@Html.GetEnumSelectList<VehicleData>().Where(x => x.Text != VehicleData.Unknown.ToString() && x.Text != VehicleData.Id.ToString())">
+                        <option selected="selected" value="">Odaberite</option>
+                    </select>
+
+                    @if (Model.SortingInfo.SortByDescending)
+                    {
+                            <a class="fa fa-sort-alpha-up m-3"></a>
+                            <input type="submit" 
+                                   class="btn btn-outline-dark" 
+                                   value="Sortiraj"
+                                   asp-route-sortByDescending=@false
+                                   asp-route-makeId="@Model.CurrentMakeId"
+                                   asp-route-searchFilter="@Model.SearchFilter"
+                                   asp-route-searchString=@Model.SearchString/>
+                    }
+                    else
+                    {
+                        <a class="fa fa-sort-alpha-down m-3"></a>
+                        <input type="submit"    
+                               class="btn btn-outline-dark" 
+                               value="Sortiraj" 
+                               asp-route-sortByDescending=@true
+                               asp-route-makeId="@Model.CurrentMakeId"
+                               asp-route-searchFilter="@Model.SearchFilter"
+                               asp-route-searchString=@Model.SearchString/>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+@foreach (var vehicleModel in Model.VehicleModels)
+    {
+@Html.Partial("ModelSummary", vehicleModel);
+    }
+
+<div page-model="@Model.PagingInfo"
+     page-action="Administration"
+     page-classes-enabled="true"
+     page-class="btn"
+     page-class-normal="btn-outline-secondary"
+     page-class-selected="btn-primary"
+     page-url-makeId="@Model.CurrentMakeId"
+     page-url-sort="@Model.SortingInfo.SortBy"
+     page-url-sortByDescending="@Model.SortingInfo.SortByDescending"
+     page-url-searchString ="@Model.SearchString"
+     page-url-searchFilter ="@Model.SearchFilter"
+     class="btn-group m-lg-5">
+
+</div>

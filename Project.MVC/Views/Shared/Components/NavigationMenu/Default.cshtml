@@ -1,0 +1,18 @@
+﻿@model  IEnumerable<VehicleMake>
+
+
+        <a style="width:150px"
+           class=" btn btn-block btn-outline-secondary"
+           asp-action="Administration"
+           asp-controller="Model"
+           asp-route-makeId="">Svi modeli</a>
+
+        @foreach (var make in Model)
+        {
+            <a style="width:150px"
+               class=" btn btn-block  @(make.Id.ToString()==ViewBag.SelectedMake ? "btn-secondary" : "btn-outline-secondary")"
+               asp-action="Administration"
+               asp-controller="Model"
+               asp-route-makeId="@make.Id"
+               asp-route-page="1">@make.Name</a>
+        }
