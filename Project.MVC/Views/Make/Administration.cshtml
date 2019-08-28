@@ -1,0 +1,166 @@
+﻿@model MakeAdministrationViewModel
+
+@{
+    Layout = "_Layout";
+}
+    <div class="text-right">
+        <form asp-action="Administration" method="get">
+            <div class="form-actions no-color">
+                <input class="btn border-dark text-left" type="text" name="searchString" />
+                <button class="btn btn-outline-dark fa fa-search" type="submit"></button>
+                <a asp-action="Administration">Poništi</a>
+
+
+            </div>
+        </form>
+    </div>
+<br />
+<table class="table table-striped table-bordered table-sm">
+    <tr>
+        <th>
+
+            @if (Model.SortingInfo.SortBy == VehicleData.Id)
+            {
+                if (Model.SortingInfo.SortByDescending)
+                {
+                    <a class="btn fa fa-sort-numeric-up text-left"
+                       style="width:80px"
+                       asp-action="Administration"
+                       asp-controller="Make"
+                       asp-route-sort=@VehicleData.Id
+                       asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
+                }
+                else
+                {
+                    <a class="btn fa fa-sort-numeric-down text-left" 
+                       style="width:80px"
+                       asp-action="Administration" 
+                       asp-controller="Make" 
+                       asp-route-sort=@VehicleData.Id 
+                       asp-route-sortByDescending=@true 
+                       asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
+                }
+            }
+            else
+            {
+                <a class="fa text-left" 
+                   style="width:80px"
+                   asp-action="Administration" 
+                   asp-controller="Make" 
+                   asp-route-sort=@VehicleData.Id 
+                   asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
+            }
+        </th>
+        <th>
+            <span>
+                @if (Model.SortingInfo.SortBy == VehicleData.Name)
+                {
+                    if (Model.SortingInfo.SortByDescending)
+                    {
+                        <a class="btn fa fa-sort-alpha-up text-left"
+                           style="width:150px"
+                           asp-action="Administration"
+                           asp-controller="Make"
+                           asp-route-searchString=@(Model.SearchString)
+                           asp-route-sort=@VehicleData.Name>&nbsp&nbspNaziv</a>
+                    }
+                    else
+                    {
+                        <a class="btn fa fa-sort-alpha-down text-left"
+                           style="width:150px"
+                           asp-action="Administration"
+                           asp-controller="Make"
+                           asp-route-sort=@VehicleData.Name
+                           asp-route-sortByDescending=@true
+                           asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
+                    }
+                }
+                else
+                {
+                    <a class="fa text-left"
+                       style="width:150px"
+                       asp-action="Administration"
+                       asp-controller="Make"
+                       asp-route-sort=@VehicleData.Name
+                       asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
+                }
+            </span>
+        </th>
+        <th>
+            <span>
+                @if (Model.SortingInfo.SortBy == VehicleData.Abrv)
+                {
+                    if (Model.SortingInfo.SortByDescending)
+                    {
+                        <a class="btn fa fa-sort-alpha-up text-left"
+                           style="width:150px"
+                           asp-action="Administration" 
+                           asp-controller="Make" 
+                           asp-route-sort=@VehicleData.Abrv 
+                           asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
+                    }
+                    else
+                    {
+                        <a class="btn fa fa-sort-alpha-down text-left"
+                           style="width:150px"
+                           asp-action="Administration" 
+                           asp-controller="Make" 
+                           asp-route-sort=@VehicleData.Abrv 
+                           asp-route-sortByDescending=@true 
+                           asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
+                    }
+                }
+                else
+                {
+                    <a class="fa text-left" 
+                       style="width:150px"
+                       asp-action="Administration" 
+                       asp-controller="Make" 
+                       asp-route-sort=@VehicleData.Abrv 
+                       asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
+                }
+            </span>
+        </th>
+        <th>
+            <a asp-controller="Make" 
+               asp-action="Create" 
+               class="btn btn-outline-secondary">Dodaj proizvođača</a>
+        </th>
+    </tr>
+
+    @foreach (var item in Model.VehicleMakers)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.Abrv</td>
+            <td style="width:200px">
+                <div class="btn">
+                    <a class="btn btn-outline-dark" 
+                       asp-action="Edit" 
+                       asp-controller="Make" 
+                       asp-route-makeId="@item.Id">Izmjeni</a>
+
+                    <a class="btn btn-outline-danger" 
+                       onclick="return confirm('Jeste li sigurni da želite izbrisati model: @item.Name')"
+                       asp-action="Delete" 
+                       asp-controller="Make" 
+                       asp-route-makeId="@item.Id">Izbriši</a>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+
+<div page-model="@Model.PagingInfo"
+     page-action="Administration"
+     page-classes-enabled="true"
+     page-class="btn"
+     page-class-normal="btn-outline-secondary"
+     page-class-selected="btn-primary"
+     page-url-sort="@Model.SortingInfo.SortBy"
+     page-url-sortByDescending="@Model.SortingInfo.SortByDescending"
+     page-url-searchString="@Model.SearchString"
+     class="btn-group m-lg-5">
+
+</div>

@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
+
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
+        <a class="navbar-brand" href="#">Vozila</a>
+        <div class="col-11 text-right">
+            <a class="btn btn-outline-light" asp-controller="Make" asp-action="Administration">
+                <i class="fa fa-industry"></i>
+            </a>
+            <a class="btn btn-outline-light" asp-controller="Model" asp-action="Create">
+                <i class=" fa fa-car-side"></i>
+            </a>
+        </div>
+        </div>
+        <div class="row m-1 p-1">
+            <div id="VehicleMakers" class="col-3">
+               @await  Component.InvokeAsync("NavigationMenu")
+            </div>
+        <div class="col-9">
+            @RenderBody()
+                </div>
+        </div>
+</body>
+</html>
