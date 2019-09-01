@@ -9,8 +9,6 @@
                 <input class="btn border-dark text-left" type="text" name="searchString" />
                 <button class="btn btn-outline-dark fa fa-search" type="submit"></button>
                 <a asp-action="Administration">Poništi</a>
-
-
             </div>
         </form>
     </div>
@@ -19,96 +17,86 @@
     <tr>
         <th>
 
-            @if (Model.SortingInfo.SortBy == VehicleData.Id)
+            @if (Model.SortBy == nameof(VehicleMake.Id))
             {
-                if (Model.SortingInfo.SortByDescending)
-                {
-                    <a class="btn fa fa-sort-numeric-up text-left"
-                       style="width:80px"
-                       asp-action="Administration"
-                       asp-controller="Make"
-                       asp-route-sort=@VehicleData.Id
-                       asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
-                }
-                else
-                {
-                    <a class="btn fa fa-sort-numeric-down text-left" 
-                       style="width:80px"
-                       asp-action="Administration" 
-                       asp-controller="Make" 
-                       asp-route-sort=@VehicleData.Id 
-                       asp-route-sortByDescending=@true 
-                       asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
-                }
+                <a class="btn fa fa-sort-numeric-down text-left"
+                   style="width:80px"
+                   asp-action="Administration"
+                   asp-controller="Make"
+                   asp-route-sortBy=@(nameof(VehicleMake.Id) + "_desc")
+                   asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
+            }
+            else if (Model.SortBy == nameof(VehicleMake.Id) + "_desc")
+            {
+        <a class="btn fa fa-sort-numeric-up text-left"
+           style="width:80px"
+           asp-action="Administration"
+           asp-controller="Make"
+           asp-route-sortBy=@nameof(VehicleMake.Id)
+           asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
             }
             else
             {
-                <a class="fa text-left" 
-                   style="width:80px"
-                   asp-action="Administration" 
-                   asp-controller="Make" 
-                   asp-route-sort=@VehicleData.Id 
-                   asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
+            <a class="fa text-left"
+               style="width:80px"
+               asp-action="Administration"
+               asp-controller="Make"
+               asp-route-sortBy=@nameof(VehicleMake.Id)
+               asp-route-searchString=@Model.SearchString>&nbsp&nbspID</a>
             }
         </th>
         <th>
             <span>
-                @if (Model.SortingInfo.SortBy == VehicleData.Name)
+                @if (Model.SortBy == nameof(VehicleMake.Name))
                 {
-                    if (Model.SortingInfo.SortByDescending)
-                    {
-                        <a class="btn fa fa-sort-alpha-up text-left"
-                           style="width:150px"
-                           asp-action="Administration"
-                           asp-controller="Make"
-                           asp-route-searchString=@(Model.SearchString)
-                           asp-route-sort=@VehicleData.Name>&nbsp&nbspNaziv</a>
-                    }
-                    else
-                    {
-                        <a class="btn fa fa-sort-alpha-down text-left"
-                           style="width:150px"
-                           asp-action="Administration"
-                           asp-controller="Make"
-                           asp-route-sort=@VehicleData.Name
-                           asp-route-sortByDescending=@true
-                           asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
-                    }
+
+                <a class="btn fa fa-sort-alpha-up text-left"
+                   style="width:150px"
+                   asp-action="Administration"
+                   asp-controller="Make"
+                   asp-route-searchString=@(Model.SearchString)
+                   asp-route-sortBy=@(nameof(VehicleMake.Name)+"_desc")>&nbsp&nbspNaziv</a>
+                }
+                else if(Model.SortBy == nameof(VehicleMake.Name)+"_desc")
+                {
+                <a class="btn fa fa-sort-alpha-down text-left"
+                   style="width:150px"
+                   asp-action="Administration"
+                   asp-controller="Make"
+                   asp-route-sortBy=@(nameof(VehicleMake.Name))
+                   asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
                 }
                 else
                 {
-                    <a class="fa text-left"
-                       style="width:150px"
-                       asp-action="Administration"
-                       asp-controller="Make"
-                       asp-route-sort=@VehicleData.Name
-                       asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
+                <a class="fa text-left"
+                   style="width:150px"
+                   asp-action="Administration"
+                   asp-controller="Make"
+                   asp-route-sortBy=@(nameof(VehicleMake.Name))
+                   asp-route-searchString=@(Model.SearchString)>&nbsp&nbspNaziv</a>
                 }
             </span>
         </th>
         <th>
             <span>
-                @if (Model.SortingInfo.SortBy == VehicleData.Abrv)
+                @if (Model.SortBy == nameof(VehicleMake.Abrv))
                 {
-                    if (Model.SortingInfo.SortByDescending)
-                    {
+
                         <a class="btn fa fa-sort-alpha-up text-left"
                            style="width:150px"
                            asp-action="Administration" 
                            asp-controller="Make" 
-                           asp-route-sort=@VehicleData.Abrv 
+                           asp-route-sortBy=@(nameof(VehicleMake.Abrv)+"_desc")
                            asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
-                    }
-                    else
-                    {
+                }
+                else if (Model.SortBy == nameof(VehicleMake.Abrv) + "_desc")
+                {
                         <a class="btn fa fa-sort-alpha-down text-left"
                            style="width:150px"
                            asp-action="Administration" 
                            asp-controller="Make" 
-                           asp-route-sort=@VehicleData.Abrv 
-                           asp-route-sortByDescending=@true 
+                           asp-route-sortBy=@(nameof(VehicleMake.Abrv))
                            asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
-                    }
                 }
                 else
                 {
@@ -116,7 +104,7 @@
                        style="width:150px"
                        asp-action="Administration" 
                        asp-controller="Make" 
-                       asp-route-sort=@VehicleData.Abrv 
+                       asp-route-sortBy=@(nameof(VehicleMake.Abrv))
                        asp-route-searchString=@Model.SearchString>&nbsp&nbspSkraćenica</a>
                 }
             </span>
@@ -158,8 +146,7 @@
      page-class="btn"
      page-class-normal="btn-outline-secondary"
      page-class-selected="btn-primary"
-     page-url-sort="@Model.SortingInfo.SortBy"
-     page-url-sortByDescending="@Model.SortingInfo.SortByDescending"
+     page-url-sortBy="@Model.SortBy"
      page-url-searchString="@Model.SearchString"
      class="btn-group m-lg-5">
 

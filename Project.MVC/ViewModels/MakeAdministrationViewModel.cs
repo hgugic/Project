@@ -8,9 +8,10 @@ namespace Project.MVC.ViewModels
     /// </summary>
     public class MakeAdministrationViewModel
     {
+        
         public IEnumerable<VehicleMake> VehicleMakers { get; set; }
         public PagingInfo PagingInfo { get; set; }
-        public SortingInfo SortingInfo { get; set; }
         public string SearchString { get; set; }
+        public string SortBy { get; set; }
     }
 }

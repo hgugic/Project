@@ -8,13 +8,13 @@
                 <div class="form-group mb-2">
                     <input class="btn border border-dark text-left m-2" type="text" name="searchString" value="@Model.SearchString" />
                     <select class="custom-select border-dark m-2"
-                            asp-for="SearchFilter"
-                            asp-items="@Html.GetEnumSelectList<VehicleData>().Where(x => x.Text != VehicleData.Unknown.ToString() && x.Text != VehicleData.Id.ToString())">
-                        <option selected="selected" value="">Odabirite filter</option>
-                    </select>
+                            asp-for="SearchFilter" 
+                            asp-items="@(Model.FilteringList)">
+                            </select>
                         <input type="submit" class="btn btn-outline-dark" value="Traži" 
-                               asp-route-sort="@Model.SortingInfo.SortBy"
-                               asp-route-sortByDescending=@Model.SortingInfo.SortByDescending />
+                               asp-route-sortBy="@Model.SortBy"
+                                                          asp-route-searchFilter="@Model.SearchFilter"
+                           asp-route-searchString="@Model.SearchString"/>
                 </div>
             </form>
             </div>
@@ -23,34 +23,18 @@
             <form class="form-inline" asp-action="Administration">
                 <div class="form-group mb-2">
                     <label>Sortiraj po:</label>
-                    <select class="custom-select border-dark m-2"
-                            name="sort" asp-for="SortingInfo.SortBy"
-                            asp-items="@Html.GetEnumSelectList<VehicleData>().Where(x => x.Text != VehicleData.Unknown.ToString() && x.Text != VehicleData.Id.ToString())">
-                        <option selected="selected" value="">Odaberite</option>
-                    </select>
+                            <select asp-for="SortBy" class="custom-select mr-sm-2"
+                                    asp-items="@(Model.SortingList)">
+                            </select>
+                    <a class="fa fa-sort-alpha-down m-3"></a>
+                    <input type="submit"
+                           class="btn btn-outline-dark"
+                           value="Sortiraj"
+                           asp-route-sortBy=@Model.SortBy
+                           asp-route-makeId="@Model.CurrentMakeId"
+                           asp-route-searchFilter="@Model.SearchFilter"
+                           asp-route-searchString="@Model.SearchString" />
 
-                    @if (Model.SortingInfo.SortByDescending)
-                    {
-                            <a class="fa fa-sort-alpha-up m-3"></a>
-                            <input type="submit" 
-                                   class="btn btn-outline-dark" 
-                                   value="Sortiraj"
-                                   asp-route-sortByDescending=@false
-                                   asp-route-makeId="@Model.CurrentMakeId"
-                                   asp-route-searchFilter="@Model.SearchFilter"
-                                   asp-route-searchString=@Model.SearchString/>
-                    }
-                    else
-                    {
-                        <a class="fa fa-sort-alpha-down m-3"></a>
-                        <input type="submit"    
-                               class="btn btn-outline-dark" 
-                               value="Sortiraj" 
-                               asp-route-sortByDescending=@true
-                               asp-route-makeId="@Model.CurrentMakeId"
-                               asp-route-searchFilter="@Model.SearchFilter"
-                               asp-route-searchString=@Model.SearchString/>
-                    }
                 </div>
             </form>
         </div>
@@ -70,8 +54,7 @@
      page-class-normal="btn-outline-secondary"
      page-class-selected="btn-primary"
      page-url-makeId="@Model.CurrentMakeId"
-     page-url-sort="@Model.SortingInfo.SortBy"
-     page-url-sortByDescending="@Model.SortingInfo.SortByDescending"
+     page-url-sortBy="@Model.SortBy"
      page-url-searchString ="@Model.SearchString"
      page-url-searchFilter ="@Model.SearchFilter"
      class="btn-group m-lg-5">

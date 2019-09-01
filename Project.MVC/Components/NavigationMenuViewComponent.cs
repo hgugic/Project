@@ -17,9 +17,9 @@ namespace Project.MVC.Components
         }
 
         public IViewComponentResult Invoke()
-        {
-            ViewBag.SelectedMake = RouteData?.Values["makeId"];
-            return View(makeRepository.VehicleMakers.OrderBy(x =>x.Name));
+        {            
+            ViewBag.SelectedMake = RouteData?.Values["searchString"];
+            return View(makeRepository.VehicleMakers().SortBy("").ToCollection());
         }
     }
 }

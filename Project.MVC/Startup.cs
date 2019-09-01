@@ -27,8 +27,8 @@ namespace Project.MVC
                                 config.GetConnectionString("VehicleDbConnection"),
                                     x => x.MigrationsAssembly("Project.Service")));
 
-            services.AddTransient<IMakeRepository, VehicleService>();
-            services.AddTransient<IModelRepository, VehicleService>();
+            services.AddTransient<IMakeRepository, EFMakeRepository>();
+            services.AddTransient<IModelRepository, EFModelRepository>();
             services.AddMvc();
         }
 
@@ -37,9 +37,9 @@ namespace Project.MVC
         {
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
-                app.UseExceptionHandler("/Error/");
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+                app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Error/");
+                //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
             else
             {

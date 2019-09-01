@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Project.MVC.ViewModels;
 using Project.Service;
-using Project.Service.Enums;
 using Project.Service.Interfaces;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,68 +9,44 @@ namespace Project.MVC.Controllers
 {
     public class MakeController : Controller
     {
-        private readonly IMakeRepository makeRepository;
+
         public int PageSize = 3;
+        private readonly IMakeRepository makeRepository;
 
         public MakeController(IMakeRepository makeRepository)
         {
             this.makeRepository = makeRepository;
         }
 
-        public ViewResult Administration(string searchString, VehicleData sort = default, bool sortByDescending = false, int page = 1)
+        public ViewResult Administration(string searchString, string currentFilter, string sortBy, int page = 1)
         {
             MakeAdministrationViewModel viewModel = new MakeAdministrationViewModel();
 
             viewModel.SearchString = searchString;
-            viewModel.VehicleMakers = makeRepository.Search(searchString, makeRepository.VehicleMakers);
-            viewModel.VehicleMakers = makeRepository.SortBy(sort, sortByDescending, viewModel.VehicleMakers);
+            viewModel.SortBy = sortBy;
+
+            viewModel.VehicleMakers = makeRepository.VehicleMakers()
+                                                    .Find(searchString)
+                                                    .SortBy(sortBy)
+                                                    .Pagination(PageSize, page)
+                                                    .ToCollection();
 
 
-            int sizeOfCollection;
+            viewModel.PagingInfo = makeRepository.PagingInfo();
 
-            sizeOfCollection = Pagination(page, viewModel);
-
-            viewModel.SortingInfo = new SortingInfo() { SortBy = sort, SortByDescending = sortByDescending };
-
-            viewModel.PagingInfo = new PagingInfo()
-            {
-                CurrentPage = page,
-                ItemsPerPage = PageSize,
-                TotalItems = sizeOfCollection
-            };
 
             return View(viewModel);
         }
-        /// <summary>
-        /// Određivanje veličine kolekcije i priprema kolekcije za stranice
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="viewModel"></param>
-        /// <returns>int</returns>
-        private int Pagination(int page, MakeAdministrationViewModel viewModel)
-        {
-            int sizeOfCollection;
-            if (viewModel.VehicleMakers == null || !viewModel.VehicleMakers.Any())
-            {
-                sizeOfCollection = 0;
-            }
-            else
-            {
-                sizeOfCollection = viewModel.VehicleMakers.Count();
-                viewModel.VehicleMakers = makeRepository.Paging(page, PageSize, viewModel.VehicleMakers);
-            }
 
-            return sizeOfCollection;
-        }
 
         public IActionResult Delete(int makeId)
         {
-            makeRepository.DeleteVehicleMake(makeId);
+            makeRepository.Delete(makeId);
             return RedirectToAction("Administration", "Make", new { page = 1 });
         }
         public ViewResult Edit(int makeId)
         {
-            return View(makeRepository.VehicleMakers.FirstOrDefault(x=>x.Id==makeId));
+            return View(makeRepository.GetById(makeId));
         }
 
 
@@ -85,7 +56,7 @@ namespace Project.MVC.Controllers
             if (ModelState.IsValid)
             {
 
-                makeRepository.SaveVehicleMake(vehicleMakeEdit);
+                makeRepository.SaveChanges(vehicleMakeEdit);
                 return RedirectToAction("Administration", "Make", new { page = 1});
             }
             return View(vehicleMakeEdit);

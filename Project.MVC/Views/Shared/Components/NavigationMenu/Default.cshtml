@@ -1,4 +1,4 @@
-﻿@model  IEnumerable<VehicleMake>
+﻿@model IEnumerable<VehicleMake>
 
 
         <a style="width:150px"
@@ -13,6 +13,7 @@
                class=" btn btn-block  @(make.Id.ToString()==ViewBag.SelectedMake ? "btn-secondary" : "btn-outline-secondary")"
                asp-action="Administration"
                asp-controller="Model"
-               asp-route-makeId="@make.Id"
+               asp-route-searchString="@make.Id"
+               asp-route-searchFilter="MakeId"
                asp-route-page="1">@make.Name</a>
         }
