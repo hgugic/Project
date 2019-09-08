@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Project.MVC.Extensions;
+using Project.MVC.Infrastructure;
+using Project.MVC.Models;
 using Project.MVC.ViewModels;
 using Project.Service;
 using Project.Service.Interfaces;
@@ -11,29 +14,23 @@ namespace Project.MVC.Controllers
     {
 
         public int PageSize = 3;
-        private readonly IMakeRepository makeRepository;
+        private readonly IVehicleService vehicleService;
 
-        public MakeController(IMakeRepository makeRepository)
+        public MakeController(IVehicleService vehicleService)
         {
-            this.makeRepository = makeRepository;
+            this.vehicleService = vehicleService;
         }
 
-        public ViewResult Administration(string searchString, string currentFilter, string sortBy, int page = 1)
+        public ViewResult Administration(string searchString, string searchFilter, string sortBy, int page = 1)
         {
             MakeAdministrationViewModel viewModel = new MakeAdministrationViewModel();
 
             viewModel.SearchString = searchString;
             viewModel.SortBy = sortBy;
 
-            viewModel.VehicleMakers = makeRepository.VehicleMakers()
-                                                    .Find(searchString)
-                                                    .SortBy(sortBy)
-                                                    .Pagination(PageSize, page)
-                                                    .ToCollection();
+            viewModel.VehicleMakers = vehicleService.FindMake(out int totalPages, searchString, searchFilter, sortBy, PageSize, page).AsMake();
 
-
-            viewModel.PagingInfo = makeRepository.PagingInfo();
-
+            viewModel.PagingInfo = new PagingInfo() { CurrentPage = page, ItemsPerPage = PageSize, TotalPages = totalPages };
 
             return View(viewModel);
         }
@@ -41,27 +38,26 @@ namespace Project.MVC.Controllers
 
         public IActionResult Delete(int makeId)
         {
-            makeRepository.Delete(makeId);
+            vehicleService.DeleteMake(makeId);
             return RedirectToAction("Administration", "Make", new { page = 1 });
         }
         public ViewResult Edit(int makeId)
         {
-            return View(makeRepository.GetById(makeId));
+            return View(new Make(vehicleService.GetMakeById(makeId)));
         }
 
 
         [HttpPost]
-        public IActionResult Edit(VehicleMake vehicleMakeEdit)
+        public IActionResult Edit(Make vehicleMakeEdit)
         {
             if (ModelState.IsValid)
             {
-
-                makeRepository.SaveChanges(vehicleMakeEdit);
+                vehicleService.SaveChanges(vehicleMakeEdit);
                 return RedirectToAction("Administration", "Make", new { page = 1});
             }
             return View(vehicleMakeEdit);
         }
 
-        public IActionResult Create() => View("Edit", new VehicleMake());
+        public IActionResult Create() => View("Edit", new Make());
     }
 }

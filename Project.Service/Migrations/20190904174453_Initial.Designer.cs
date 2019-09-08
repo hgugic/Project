@@ -9,7 +9,7 @@ using Project.Service;
 namespace Project.Service.Migrations
 {
     [DbContext(typeof(VehicleDbContext))]
-    [Migration("20190827165320_Initial")]
+    [Migration("20190904174453_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

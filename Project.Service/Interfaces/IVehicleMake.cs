@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Project.Service
+namespace Project.Service.Interfaces
 {
-    public class Vehicle
+    public interface IVehicleMake
     {
         [Key]
-        public int Id { get; set; }
+        int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        string Name { get; set; }
         [MaxLength(10)]
-        public string Abrv { get; set; }
+        string Abrv { get; set; }
     }
 }

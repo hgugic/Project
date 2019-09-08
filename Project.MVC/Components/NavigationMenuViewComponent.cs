@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Project.MVC.Extensions;
+using Project.MVC.Models;
 using Project.Service.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Project.MVC.Components
@@ -9,17 +12,17 @@ namespace Project.MVC.Components
     /// </summary>
     public class NavigationMenuViewComponent : ViewComponent
     {
-        private readonly IMakeRepository makeRepository;
+        private readonly IVehicleService vehicleService;
 
-        public NavigationMenuViewComponent(IMakeRepository makeRepository)
+        public NavigationMenuViewComponent(IVehicleService vehicleService)
         {
-            this.makeRepository = makeRepository;
+            this.vehicleService = vehicleService;
         }
 
         public IViewComponentResult Invoke()
         {            
-            ViewBag.SelectedMake = RouteData?.Values["searchString"];
-            return View(makeRepository.VehicleMakers().SortBy("").ToCollection());
+            ViewBag.SelectedMake = RouteData?.Values["makeId"];    
+            return View(vehicleService.FindMake(out int totalPages).AsMake());
         }
     }
 }

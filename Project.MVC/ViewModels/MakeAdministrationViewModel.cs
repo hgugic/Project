@@ -1,4 +1,7 @@
-﻿using Project.Service;
+﻿using Project.MVC.Infrastructure;
+using Project.MVC.Models;
+using Project.Service;
+using Project.Service.Interfaces;
 using System.Collections.Generic;
 
 namespace Project.MVC.ViewModels
@@ -9,7 +12,7 @@ namespace Project.MVC.ViewModels
     public class MakeAdministrationViewModel
     {
         
-        public IEnumerable<VehicleMake> VehicleMakers { get; set; }
+        public IEnumerable<Make> VehicleMakers { get; set; }
         public PagingInfo PagingInfo { get; set; }
         public string SearchString { get; set; }
         public string SortBy { get; set; }

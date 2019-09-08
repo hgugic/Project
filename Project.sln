@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.MVC", "Project.MVC\Project.MVC.csproj", "{18133965-DB17-4630-9A30-0CA79414F0EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.MVC", "Project.MVC\Project.MVC.csproj", "{18133965-DB17-4630-9A30-0CA79414F0EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Service", "Project.Service\Project.Service.csproj", "{A24DF103-661B-4EF6-8E6C-B6A3A39C7C52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Service", "Project.Service\Project.Service.csproj", "{A24DF103-661B-4EF6-8E6C-B6A3A39C7C52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

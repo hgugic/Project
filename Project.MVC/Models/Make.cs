@@ -1,12 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Project.Service.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Project.MVC.ViewModels
+namespace Project.MVC.Models
 {
-    /// <summary>
-    /// View model za kreiranje ili editiranje Vehicle klase - u propertije uključena su ograničenja
-    /// </summary>
-    public class CreateOrEditViewModel
+    public class Make : IVehicleMake
     {
+        public Make()
+        {
+
+        }
+        public Make(IVehicleMake make)
+        {
+            Id = make.Id;
+            Name = make.Name;
+            Abrv = make.Abrv;
+        }
         public int Id { get; set; }
 
         [Display(Name = "Naziv")]
@@ -18,6 +30,5 @@ namespace Project.MVC.ViewModels
         [Display(Name = "Skraćenica")]
         [MaxLength(10, ErrorMessage = "Skraćenica je predugačka")]
         public string Abrv { get; set; }
-
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Project.MVC.Models;
 using Project.Service;
 using Project.Service.Interfaces;
 
@@ -27,8 +28,7 @@ namespace Project.MVC
                                 config.GetConnectionString("VehicleDbConnection"),
                                     x => x.MigrationsAssembly("Project.Service")));
 
-            services.AddTransient<IMakeRepository, EFMakeRepository>();
-            services.AddTransient<IModelRepository, EFModelRepository>();
+            services.AddTransient<IVehicleService, EFVehicleService>();
             services.AddMvc();
         }
 

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Project.MVC.Infrastructure;
+using Project.MVC.Models;
 using Project.Service;
+using Project.Service.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Project.MVC.ViewModels
 {
@@ -9,13 +13,17 @@ namespace Project.MVC.ViewModels
     /// </summary>
     public class ModelAdministrationViewModel
     {
-        public ModelAdministrationViewModel()
+        private readonly IVehicleService vehicleService;
+
+        public ModelAdministrationViewModel(IVehicleService vehicleService)
         {
             SortingList = new SelectList(GetSortingItems(), "Value", "Text", this.SortBy);
             FilteringList = new SelectList(GetFilteringItems(), "Value", "Text", this.SearchFilter);
+            this.vehicleService = vehicleService;
         }
 
-        public IEnumerable<VehicleModel> VehicleModels { get; set; }
+
+        public IEnumerable<Model> VehicleModels { get; set; }
 
         public PagingInfo PagingInfo { get; set; }
 
@@ -52,11 +60,12 @@ namespace Project.MVC.ViewModels
             return new SelectListItem[]
             {
                 new SelectListItem() { Text = "Izaberite", Value = string.Empty },
-                new SelectListItem() { Text = "ID", Value = "Id" },
                 new SelectListItem() { Text = "Naziv", Value = "Name" },
                 new SelectListItem() { Text = "Skraćenica", Value = "Abrv" },
                 new SelectListItem() { Text = "Proizvođač", Value = "Make" },
             };
         }
+
+
     }
 }
