@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Project.MVC.Models;
 using Project.Service;
 using Project.Service.Interfaces;
 
@@ -27,6 +27,8 @@ namespace Project.MVC
             services.AddDbContextPool<VehicleDbContext>(options => options.UseSqlServer(
                                 config.GetConnectionString("VehicleDbConnection"),
                                     x => x.MigrationsAssembly("Project.Service")));
+
+
 
             services.AddTransient<IVehicleService, EFVehicleService>();
             services.AddMvc();

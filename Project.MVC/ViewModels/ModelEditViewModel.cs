@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Project.MVC.Models;
+using Project.Models;
+using Project.Models.Interfaces;
 using Project.Service.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +13,12 @@ namespace Project.MVC.ViewModels
     public class ModelEditViewModel
     {
 
-        public Model VehicleModel { get; set; }
+        public ModelEditViewModel()
+        {
+            VehicleModel = new Model();
+        }
+
+        public IModel VehicleModel { get; set; }
 
         public SelectList ListMake { get; set; }
 
@@ -28,7 +34,7 @@ namespace Project.MVC.ViewModels
             if (VehicleModel == null)
                 VehicleModel = new Model() { Id = 0, MakeId = 0 };
 
-            foreach (var item in makeRepository.FindMake(out int i))
+            foreach (var item in makeRepository.FindMake(null, null, null))
             {
                 list.Add(Item(item.Name, item.Id));
             }

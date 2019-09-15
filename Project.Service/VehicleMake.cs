@@ -11,8 +11,6 @@ namespace Project.Service
     /// </summary>
     public class VehicleMake : Vehicle, IVehicleMake
     {
-
-
         public ICollection<VehicleModel> VehicleModels { get; set; }
 
     }

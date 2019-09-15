@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Project.MVC.ViewModels;
-using Project.Service;
+using Project.MVC.Extensions;
 using Project.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Service.Extensions;
 using Project.MVC.Infrastructure;
-using Project.MVC.Extensions;
+using Project.Shared;
+using Project.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,30 +23,25 @@ namespace Project.MVC.Controllers
         }
         public ViewResult Administration(int? makeId, string searchString, string searchFilter, string sortBy,  int page = 1)
         {
-            ModelAdministrationViewModel viewModel = new ModelAdministrationViewModel(vehicleService);
+            ModelAdministrationViewModel viewModel = new ModelAdministrationViewModel(searchString, searchFilter, sortBy);
 
-            viewModel.SearchString = searchString;
-            viewModel.SearchFilter = searchFilter;
-            viewModel.SortBy = sortBy;
-            viewModel.CurrentMakeId = makeId;
-            viewModel.PagingInfo = new PagingInfo() { CurrentPage = page, ItemsPerPage = PageSize };
-
-            int totalPages;
+            var sorting = new Sorting(sortBy);
+            viewModel.PagingInfo = new Paging() { CurrentPage = page, ItemsPerPage = PageSize };
 
             if (makeId != null)
             {
-                viewModel.VehicleModels = vehicleService.FindModel(out totalPages, makeId.ToString(), "MakeId", sortBy, PageSize, page)
-                                                        .AsModel()
-                                                        .IncludeMake(vehicleService.FindMake(out int i));
+                viewModel.CurrentMakeId = makeId;
+                var filtering = new VehicleFilter() { Filter = "MakeId", SearchString = makeId.ToString() };
+                viewModel.VehicleModels = vehicleService.FindModel(filtering, sorting, viewModel.PagingInfo);
+                viewModel.VehicleModels = viewModel.VehicleModels.IncludeMake(vehicleService.FindMake(null, null, null));
             }
             else
             {
-                viewModel.VehicleModels = vehicleService.FindModel(out totalPages, searchString, searchFilter, sortBy, PageSize, page)
-                                                        .AsModel()
-                                                        .IncludeMake(vehicleService.FindMake(out int i));
 
+                var filtering = new VehicleFilter() { Filter = searchFilter, SearchString = searchString };
+                viewModel.VehicleModels = vehicleService.FindModel(filtering, sorting, viewModel.PagingInfo);
+                viewModel.VehicleModels = viewModel.VehicleModels.IncludeMake(vehicleService.FindMake(null, null, null));
             }
-            viewModel.PagingInfo.TotalPages = totalPages;
 
             return View(viewModel);
         }
@@ -63,7 +59,7 @@ namespace Project.MVC.Controllers
 
             var modelEdit = new ModelEditViewModel()
             {
-                VehicleModel = new Models.Model(vehicleService.GetModelById(modelId))
+                VehicleModel = vehicleService.GetModelById(modelId)
             };
 
             modelEdit.SelectList(vehicleService);
@@ -90,7 +86,7 @@ namespace Project.MVC.Controllers
 
         public IActionResult Create()
         {
-            ModelEditViewModel vm = new ModelEditViewModel();
+            ModelEditViewModel vm = new ModelEditViewModel() { VehicleModel = new Model()};
             vm.SelectList(vehicleService);
             return View("Edit", vm);
         }

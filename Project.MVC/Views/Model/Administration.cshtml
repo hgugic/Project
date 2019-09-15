@@ -2,49 +2,47 @@
 
 
 
-    <div class="form-group row">
-        <div class="col">
-            <form class="form-inline" asp-action="Administration">
-                <div class="form-group mb-2">
-                    <input class="btn border border-dark text-left m-2" type="text" name="searchString" value="@Model.SearchString" />
-                    <select class="custom-select border-dark m-2"
-                            asp-for="SearchFilter" 
-                            asp-items="@(Model.FilteringList)">
-                            </select>
-                        <input type="submit" class="btn btn-outline-dark" value="Traži" 
-                               asp-route-sortBy="@Model.SortBy"
-                               asp-route-searchFilter="@Model.SearchFilter"
-                               asp-route-searchString="@Model.SearchString"/>
-                </div>
-            </form>
+<div class="form-group row">
+    <div class="col">
+        <form class="form-inline" asp-action="Administration">
+            <div class="form-group mb-2">
+                <input class="btn border border-dark text-left m-2" type="text" name="searchString" value="@Model.SearchString" />
+                <select class="custom-select border-dark m-2"
+                        asp-for="SearchFilter"
+                        asp-items="@(Model.FilteringList)"></select>
+                <input type="submit" class="btn btn-outline-dark" value="Traži"
+                       asp-route-sortBy="@Model.SortBy"
+                       asp-route-searchFilter="@Model.SearchFilter"
+                       asp-route-searchString="@Model.SearchString" />
             </div>
-
-        <div class="col" >
-            <form class="form-inline" asp-action="Administration">
-                <div class="form-group mb-2">
-                    <label>Sortiraj po:</label>
-                            <select asp-for="SortBy" class="custom-select mr-sm-2"
-                                    asp-items="@(Model.SortingList)">
-                            </select>
-                    <input type="submit"
-                           class="btn btn-outline-dark"
-                           value="Sortiraj"
-                           asp-route-sortBy=@Model.SortBy
-                           asp-route-makeId="@Model.CurrentMakeId"
-                           asp-route-searchFilter="@Model.SearchFilter"
-                           asp-route-searchString="@Model.SearchString" />
-
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
 
+    <div class="col">
+        <form class="form-inline" asp-action="Administration">
+            <div class="form-group mb-2">
+                <label>Sortiraj po:</label>
+                <select asp-for="SortBy" class="custom-select mr-sm-2"
+                        asp-items="@(Model.SortingList)"></select>
+                <input type="submit"
+                       class="btn btn-outline-dark"
+                       value="Sortiraj"
+                       asp-route-sortBy=@Model.SortBy
+                       asp-route-makeId="@Model.CurrentMakeId"
+                       asp-route-searchFilter="@Model.SearchFilter"
+                       asp-route-searchString="@Model.SearchString" />
+
+            </div>
+        </form>
+    </div>
+</div>
 
 
-@foreach (Model vModel  in Model.VehicleModels)
-    {
-@Html.Partial("ModelSummary", vModel);
-    }
+
+@foreach (Model vModel in Model.VehicleModels)
+{
+    @Html.Partial("ModelSummary", vModel);
+}
 
 <div page-model="@Model.PagingInfo"
      page-action="Administration"
@@ -54,8 +52,8 @@
      page-class-selected="btn-primary"
      page-url-makeId="@Model.CurrentMakeId"
      page-url-sortBy="@Model.SortBy"
-     page-url-searchString ="@Model.SearchString"
-     page-url-searchFilter ="@Model.SearchFilter"
+     page-url-searchString="@Model.SearchString"
+     page-url-searchFilter="@Model.SearchFilter"
      class="btn-group m-lg-5">
 
 </div>

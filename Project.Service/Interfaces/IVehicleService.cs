@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Project.Models.Interfaces;
+using Project.Shared;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,35 +10,25 @@ namespace Project.Service.Interfaces
     {
         #region Make
 
-        IVehicleMake GetMakeById(int id);
+        IMake GetMakeById(int id);
 
-        void SaveChanges(IVehicleMake vehicleMake);
+        void SaveChanges(IMake vehicleMake);
 
-        IVehicleMake DeleteMake(int id);
+        IMake DeleteMake(int id);
 
-        IEnumerable<IVehicleMake> FindMake(out int totalPages,
-                                           string searchString = "",
-                                           string filter = "",
-                                           string sortBy = "",
-                                           int itemsPerPage = 0,
-                                           int page = 0);
+        IEnumerable<IMake> FindMake(IFilter filter, ISort sort, IPaging paging);
 
         #endregion Make
 
         #region Model
 
-        IVehicleModel GetModelById(int id);
+        IModel GetModelById(int id);
 
-        void SaveChanges(IVehicleModel vehicleModel);
+        void SaveChanges(IModel vehicleModel);
 
-        IVehicleModel DeleteModel(int id);
+        IModel DeleteModel(int id);
 
-        IEnumerable<IVehicleModel> FindModel(out int totalPages, 
-                                             string searchString = "", 
-                                             string filter = "", 
-                                             string sortBy = "", 
-                                             int itemsPerPage = 0, 
-                                             int page = 0);
+        IEnumerable<IModel> FindModel(IFilter filter, ISort sort, IPaging paging);
 
         #endregion Model
     }

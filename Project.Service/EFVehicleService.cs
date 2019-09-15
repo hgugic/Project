@@ -1,5 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Project.Models;
+using Project.Models.Interfaces;
 using Project.Service.Interfaces;
+using Project.Service.Mappings;
+using Project.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +15,23 @@ namespace Project.Service
     public class EFVehicleService : IVehicleService  
     {
         private readonly VehicleDbContext context;
-        IEnumerable<IVehicleModel> Models;
-        IEnumerable<IVehicleMake> Makers;
+        private IMapper mapper;
 
         public EFVehicleService(VehicleDbContext context)
         {
             this.context = context;
+            AutoMapperMap.ConfigureMapping();
+            mapper = AutoMapperMap.GetMapper();
         }
 
         #region Model
 
-        public IVehicleModel GetModelById(int id)
+        public IModel GetModelById(int id)
         {
-            return context.VehicleModels.FirstOrDefault(x => x.Id == id);
+            return mapper.Map<Model>(context.VehicleModels.FirstOrDefault(x => x.Id == id));
         }
 
-        public IVehicleModel DeleteModel(int id)
+        public IModel DeleteModel(int id)
         {
             VehicleModel model = context.VehicleModels.Find(id);
             if (model != null)
@@ -33,145 +39,134 @@ namespace Project.Service
                 context.Remove(model);
                 context.SaveChanges();
             }
-            return model;
+            return mapper.Map<Model>(model);
         }
 
-        public void SaveChanges(IVehicleModel vehicleModel)
+        public void SaveChanges(IModel vehicleModel)
         {
 
             if (vehicleModel.Id == 0)
             {
-                context.Add(ConvertToVehicleModel(vehicleModel));
+                context.Add(mapper.Map<VehicleModel>(vehicleModel));
                 context.SaveChanges();
             }
             else
             {
-                var vehicle = context.VehicleModels.Attach(ConvertToVehicleModel(vehicleModel));
+                var vehicle = context.VehicleModels.Attach(mapper.Map<VehicleModel>(vehicleModel));
                 vehicle.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                 context.SaveChanges();
             }
         }
 
-        public IEnumerable<IVehicleModel> FindModel(out int totalPages, string searchString = "", string filter = "", string sortBy = "", int itemsPerPage = 0, int page = 0)
+        public IEnumerable<IModel> FindModel(IFilter filter, ISort sort, IPaging paging)
         {
-            Models = context.VehicleModels;
-            ModelListFind(searchString, filter);
-            ModelListSortBy(sortBy);
-            ModelListPaging(itemsPerPage, out totalPages, page);
-            return Models;
+            IEnumerable<IVehicleModel> models = context.VehicleModels;
+            models = ModelListFind(models, filter);
+            models = ModelListSortBy(models, sort);
+            models = ModelListPaging(models, paging);
+            return mapper.Map<IEnumerable<Model>>(models);
         }
 
-        private void ModelListFind(string searchString, string filter = "")
+        private IEnumerable<IVehicleModel> ModelListFind(IEnumerable<IVehicleModel> models, IFilter filter)
         {
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(filter.SearchString))
             {
-                searchString = searchString.ToUpper();
+                filter.SearchString = filter.SearchString.ToUpper();
 
-                switch (filter)
+                switch (filter.Filter)
                 {
                     case "Name":
-                        Models = Models.Where(x => x.Name.ToUpper().Contains(searchString));
+                        models = models.Where(x => x.Name.ToUpper().Contains(filter.SearchString));
                         break;
 
                     case "Id":
-                        Models = Models.Where(x => x.Id.ToString() == searchString);
+                        models = models.Where(x => x.Id.ToString() == filter.SearchString);
                         break;
 
                     case "Abrv":
-                        Models = Models.Where(x => x.Abrv.ToUpper().Contains(searchString));
+                        models = models.Where(x => x.Abrv.ToUpper().Contains(filter.SearchString));
                         break;
 
                     case "Make":
                         IEnumerable<VehicleModel> ModelsWithMake = context.VehicleModels.Include(x => x.Make)
                                                                             .Where(x => x.Make.Name.ToUpper()
-                                                                                                   .Contains(searchString));
+                                                                                                   .Contains(filter.SearchString));
 
-                        Models = Models.Intersect(ModelsWithMake, new VehicleModelIdComparer());
+                        models = models.Intersect(ModelsWithMake, new VehicleModelIdComparer());
                         break;
 
                     case "MakeId":
-                        Models = Models.Where(x => x.MakeId.ToString() == searchString);
+                        models = models.Where(x => x.MakeId.ToString() == filter.SearchString);
                         break;
 
                     default:
-                        Models = Models.Where(x => x.Name.ToUpper().Contains(searchString) ||
-                                                   x.Id.ToString().Contains(searchString) ||
-                                                   x.Abrv.ToUpper().Contains(searchString));
+                        models = models.Where(x => x.Name.ToUpper().Contains(filter.SearchString) ||
+                                                   x.Id.ToString().Contains(filter.SearchString) ||
+                                                   x.Abrv.ToUpper().Contains(filter.SearchString));
 
                         break;
                 }
             }
+            return models;
         }
 
-        private void ModelListPaging(int itemsPerPage, out int totalPages, int page = 1)
+        private IEnumerable<IVehicleModel> ModelListPaging(IEnumerable<IVehicleModel> models, IPaging paging)
         {
-            totalPages = 0;
+            paging.TotalPages = 0;
 
-            if (itemsPerPage != 0)
+            if (paging.ItemsPerPage != 0)
             {
-                totalPages = (int)Math.Ceiling((decimal)Models.Count() / itemsPerPage);
-                Models = Models.Skip((page - 1) * itemsPerPage).Take(itemsPerPage);
+                paging.TotalPages = (int)Math.Ceiling((decimal)models.Count() / paging.ItemsPerPage);
+                return models.Skip((paging.CurrentPage - 1) * paging.ItemsPerPage).Take(paging.ItemsPerPage);
             }
+
+            return models;
         }
 
-        private void ModelListSortBy(string sortBy)
+        private IEnumerable<IVehicleModel> ModelListSortBy(IEnumerable<IVehicleModel> models, ISort sort)
         {
-            if (!string.IsNullOrEmpty(sortBy))
+            if (!string.IsNullOrEmpty(sort.SortBy))
             {
-                switch (sortBy)
+                switch (sort.SortBy)
                 {
-                    case "Name_desc":
-                        Models = Models.OrderBy(x => x.Name).Reverse();
-                        break;
                     case "Id":
-                        Models = Models.OrderBy(x => x.Id);
+                        models = models.OrderBy(x => x.Id);
                         break;
-                    case "Id_desc":
-                        Models = Models.OrderBy(x => x.Id).Reverse();
-                        break;
+
                     case "Abrv":
-                        Models = Models.OrderBy(x => x.Abrv);
+                        models = models.OrderBy(x => x.Abrv);
                         break;
-                    case "Abrv_desc":
-                        Models = Models.OrderBy(x => x.Abrv).Reverse();
-                        break;
+
                     case "Make":
-                        IEnumerable<VehicleModel> ModelsWithMakeAsc = context.VehicleModels.Include(x => x.Make).OrderBy(x => x.Make.Name);                    
-                        Models = ModelsWithMakeAsc.Intersect(Models, new VehicleModelIdComparer());
+                        IEnumerable<VehicleModel> modelsWithMakeAsc = context.VehicleModels.Include(x => x.Make).OrderBy(x => x.Make.Name);                    
+                        models = modelsWithMakeAsc.Intersect(models, new VehicleModelIdComparer());
                         break;
-                    case "Make_desc":
-                        IEnumerable<VehicleModel> ModelsWithMakeDsc = context.VehicleModels.Include(x => x.Make).OrderByDescending(x => x.Make.Name);
-                        Models = ModelsWithMakeDsc.Intersect(Models, new VehicleModelIdComparer());
-                        break;
+
                     default:
-                        Models = Models.OrderBy(x => x.Name);
+                        models = models.OrderBy(x => x.Name);
                         break;
                 }
-            }
-        }
 
-        private VehicleModel ConvertToVehicleModel(IVehicleModel vehicleModel)
-        {
-            return new VehicleModel()
-            {
-                Id = vehicleModel.Id,
-                Name = vehicleModel.Name,
-                Abrv = vehicleModel.Abrv,
-                MakeId = vehicleModel.MakeId
-            };
+                if(sort.SortDirection == "desc")
+                {
+                    models = models.Reverse();
+                }
+
+            }
+            return models;
         }
 
         #endregion Model
 
         #region Make
 
-        public IVehicleMake GetMakeById(int id)
+        public IMake GetMakeById(int id)
         {
-            return context.VehicleMakers.FirstOrDefault(x => x.Id == id);
+            return mapper.Map<Make>(context.VehicleMakers.FirstOrDefault(x => x.Id == id));
         }
 
-        public IVehicleMake DeleteMake(int id)
+        public IMake DeleteMake(int id)
         {
             VehicleMake make = context.VehicleMakers.Find(id);
             if (make != null)
@@ -179,115 +174,107 @@ namespace Project.Service
                 context.Remove(make);
                 context.SaveChanges();
             }
-            return make;
+            return mapper.Map<Make>(make);
         }
 
-        public void SaveChanges(IVehicleMake vehicleMake)
+        public void SaveChanges(IMake vehicleMake)
         {
             if (vehicleMake.Id == 0)
             {
-                context.Add(ConvertToVehicleMake(vehicleMake));
+                context.Add(mapper.Map<VehicleMake>(vehicleMake));
                 context.SaveChanges();
             }
             else
             {
-                var vehicle = context.VehicleMakers.Attach(ConvertToVehicleMake(vehicleMake));
+                var vehicle = context.VehicleMakers.Attach(mapper.Map<VehicleMake>(vehicleMake));
                 vehicle.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                 context.SaveChanges();
             }
         }
 
-        public IEnumerable<IVehicleMake> FindMake(out int totalPages, 
-                                              string searchString = "", 
-                                              string filter = "", 
-                                              string sortBy = "", 
-                                              int itemsPerPage = 0, 
-                                              int page = 0)
+        public IEnumerable<IMake> FindMake(IFilter filter, ISort sort, IPaging paging)
         {
-            Makers = context.VehicleMakers;
-            MakeListFind(searchString, filter);
-            MakeListSortBy(sortBy);
-            MakeListPaging(itemsPerPage, out totalPages, page);
-            return Makers;
+            IEnumerable<IVehicleMake> makers = context.VehicleMakers;
+            makers = MakeListFind(makers, filter);
+            makers = MakeListSortBy(makers, sort);
+            makers = MakeListPaging(makers, paging);
+            return mapper.Map<IEnumerable<Make>>(makers);
         }
 
-        private void MakeListFind(string searchString, string filter = "")
+        private IEnumerable<IVehicleMake> MakeListFind(IEnumerable<IVehicleMake> makers, IFilter filter)
         {
-            if (!string.IsNullOrEmpty(searchString))
+            if (filter !=null)
             {
-                searchString = searchString.ToUpper();
-
-                switch (filter)
+                if (!string.IsNullOrEmpty(filter.SearchString))
                 {
-                    case "Name":
-                        Makers = Makers.Where(x => x.Name.ToUpper().Contains(searchString));
-                        break;
+                    filter.SearchString = filter.SearchString.ToUpper();
 
-                    case "Id":
-                        Makers = Makers.Where(x => x.Id.ToString() == searchString);
-                        break;
+                    switch (filter.Filter)
+                    {
+                        case "Name":
+                            makers = makers.Where(x => x.Name.ToUpper().Contains(filter.SearchString));
+                            break;
 
-                    case "Abrv":
-                        Makers = Makers.Where(x => x.Abrv.ToUpper().Contains(searchString));
-                        break;
+                        case "Id":
+                            makers = makers.Where(x => x.Id.ToString() == filter.SearchString);
+                            break;
 
-                    default:
-                        Makers = Makers.Where(x => x.Name.ToUpper().Contains(searchString) ||
-                                                   x.Id.ToString().Contains(searchString) ||
-                                                   x.Abrv.ToUpper().Contains(searchString));
-                        break;
+                        case "Abrv":
+                            makers = makers.Where(x => x.Abrv.ToUpper().Contains(filter.SearchString));
+                            break;
+
+                        default:
+                            makers = makers.Where(x => x.Name.ToUpper().Contains(filter.SearchString) ||
+                                                       x.Id.ToString().Contains(filter.SearchString) ||
+                                                       x.Abrv.ToUpper().Contains(filter.SearchString));
+                            break;
+                    }
                 }
             }
 
+            return makers;
+
         }
 
-        private void MakeListPaging(int itemsPerPage, out int totalPages, int page = 1)
+        private IEnumerable<IVehicleMake> MakeListPaging(IEnumerable<IVehicleMake> makers, IPaging paging)
         {
-            totalPages = 0;
-
-            if (itemsPerPage != 0)
+            if (paging != null)
             {
-                totalPages = (int)Math.Ceiling((decimal)Makers.Count() / itemsPerPage);
-                Makers = Makers.Skip((page - 1) * itemsPerPage).Take(itemsPerPage);
-            }
-        }
-
-        private void MakeListSortBy(string sortBy)
-        {
-            if (!string.IsNullOrEmpty(sortBy))
-            {
-                switch (sortBy)
+                if (paging.ItemsPerPage != 0)
                 {
-                    case "Name_desc":
-                        Makers = Makers.OrderBy(x => x.Name).Reverse();
-                        break;
-                    case "Id":
-                        Makers = Makers.OrderBy(x => x.Id);
-                        break;
-                    case "Id_desc":
-                        Makers = Makers.OrderBy(x => x.Id).Reverse();
-                        break;
-                    case "Abrv":
-                        Makers = Makers.OrderBy(x => x.Abrv);
-                        break;
-                    case "Abrv_desc":
-                        Makers = Makers.OrderBy(x => x.Abrv).Reverse();
-                        break;
-                    default:
-                        Makers = Makers.OrderBy(x => x.Name);
-                        break;
+                    paging.TotalPages = (int)Math.Ceiling((decimal)makers.Count() / paging.ItemsPerPage);
+                    return makers.Skip((paging.CurrentPage - 1) * paging.ItemsPerPage).Take(paging.ItemsPerPage);
                 }
             }
+            return makers;
         }
 
-        private VehicleMake ConvertToVehicleMake(IVehicleMake vehicleMake)
+        private IEnumerable<IVehicleMake> MakeListSortBy(IEnumerable<IVehicleMake> makers, ISort sort)
         {
-            return new VehicleMake()
+            if (sort != null)
             {
-                Id = vehicleMake.Id,
-                Name = vehicleMake.Name,
-                Abrv = vehicleMake.Abrv
-            };
+                if (!string.IsNullOrEmpty(sort.SortBy))
+                {
+                    switch (sort.SortBy)
+                    {
+                        case "Id":
+                            makers = makers.OrderBy(x => x.Id);
+                            break;
+                        case "Abrv":
+                            makers = makers.OrderBy(x => x.Abrv);
+                            break;
+                        default:
+                            makers = makers.OrderBy(x => x.Name);
+                            break;
+                    }
+
+                    if (sort.SortDirection == "desc")
+                    {
+                        makers = makers.Reverse();
+                    }
+                }
+            }
+            return makers;
         }
 
         #endregion Make

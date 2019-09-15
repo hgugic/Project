@@ -1,7 +1,8 @@
-﻿using Project.MVC.Infrastructure;
-using Project.MVC.Models;
+﻿using Project.Models.Interfaces;
+using Project.MVC.Infrastructure;
 using Project.Service;
 using Project.Service.Interfaces;
+using Project.Shared;
 using System.Collections.Generic;
 
 namespace Project.MVC.ViewModels
@@ -12,9 +13,11 @@ namespace Project.MVC.ViewModels
     public class MakeAdministrationViewModel
     {
         
-        public IEnumerable<Make> VehicleMakers { get; set; }
-        public PagingInfo PagingInfo { get; set; }
-        public string SearchString { get; set; }
-        public string SortBy { get; set; }
+        public IEnumerable<IMake> VehicleMakers { get; set; }
+        public IPaging PagingInfo { get; set; }
+
+        public ISort SortingInfo { get; set; }
+
+        public IFilter FilterInfo { get; set; }
     }
 }

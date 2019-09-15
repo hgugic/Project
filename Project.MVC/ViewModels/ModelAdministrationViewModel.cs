@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Project.Models;
+using Project.Models.Interfaces;
 using Project.MVC.Infrastructure;
-using Project.MVC.Models;
 using Project.Service;
 using Project.Service.Interfaces;
+using Project.Shared;
 using System.Collections.Generic;
 using System.Linq;
+
 
 namespace Project.MVC.ViewModels
 {
@@ -13,27 +16,29 @@ namespace Project.MVC.ViewModels
     /// </summary>
     public class ModelAdministrationViewModel
     {
-        private readonly IVehicleService vehicleService;
 
-        public ModelAdministrationViewModel(IVehicleService vehicleService)
+
+        public ModelAdministrationViewModel(string searchString, string searchFilter, string sortBy)
         {
+            SearchString = searchString;
+            SearchFilter = searchFilter;
+            SortBy = sortBy;
             SortingList = new SelectList(GetSortingItems(), "Value", "Text", this.SortBy);
             FilteringList = new SelectList(GetFilteringItems(), "Value", "Text", this.SearchFilter);
-            this.vehicleService = vehicleService;
         }
 
 
-        public IEnumerable<Model> VehicleModels { get; set; }
+        public IEnumerable<IModel> VehicleModels { get; set; }
 
-        public PagingInfo PagingInfo { get; set; }
-
-        public int? CurrentMakeId { get; set; }
+        public Paging PagingInfo { get; set; }
 
         public string SearchString { get; set; }
 
         public string SearchFilter { get; set; }
 
         public string SortBy { get; set; }
+
+        public int? CurrentMakeId { get; set; }
 
         public SelectList SortingList { get; set; }
 

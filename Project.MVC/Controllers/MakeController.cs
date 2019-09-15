@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Project.Models;
 using Project.MVC.Extensions;
 using Project.MVC.Infrastructure;
-using Project.MVC.Models;
 using Project.MVC.ViewModels;
 using Project.Service;
 using Project.Service.Interfaces;
+using Project.Shared;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,13 +25,10 @@ namespace Project.MVC.Controllers
         public ViewResult Administration(string searchString, string searchFilter, string sortBy, int page = 1)
         {
             MakeAdministrationViewModel viewModel = new MakeAdministrationViewModel();
-
-            viewModel.SearchString = searchString;
-            viewModel.SortBy = sortBy;
-
-            viewModel.VehicleMakers = vehicleService.FindMake(out int totalPages, searchString, searchFilter, sortBy, PageSize, page).AsMake();
-
-            viewModel.PagingInfo = new PagingInfo() { CurrentPage = page, ItemsPerPage = PageSize, TotalPages = totalPages };
+            viewModel.FilterInfo = new VehicleFilter() { Filter = searchFilter, SearchString = searchString };
+            viewModel.SortingInfo = new Sorting(sortBy);
+            viewModel.PagingInfo = new Paging() { CurrentPage = page, ItemsPerPage = PageSize };
+            viewModel.VehicleMakers = vehicleService.FindMake(viewModel.FilterInfo, viewModel.SortingInfo, viewModel.PagingInfo);
 
             return View(viewModel);
         }
@@ -43,7 +41,7 @@ namespace Project.MVC.Controllers
         }
         public ViewResult Edit(int makeId)
         {
-            return View(new Make(vehicleService.GetMakeById(makeId)));
+            return View(vehicleService.GetMakeById(makeId));
         }
 
 

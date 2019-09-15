@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Project.MVC.Extensions;
-using Project.MVC.Models;
 using Project.Service.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace Project.MVC.Components
         public IViewComponentResult Invoke()
         {            
             ViewBag.SelectedMake = RouteData?.Values["makeId"];    
-            return View(vehicleService.FindMake(out int totalPages).AsMake());
+            return View(vehicleService.FindMake(null, null, null));
         }
     }
 }
